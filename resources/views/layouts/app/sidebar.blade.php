@@ -118,7 +118,7 @@
                         {{ __('Dashboard') }}
                     </flux:sidebar.item>
                     @if(in_array($role,['admin']))
-                        <flux:sidebar.item icon="Users" :href="route('admin.users')" :current="request()->routeIs('admin.users')" wire:navigate>
+                        <flux:sidebar.item icon="users" :href="route('admin.users')" :current="request()->routeIs('admin.users')" wire:navigate>
                             {{ __('Users') }}
                         </flux:sidebar.item>
                         <flux:sidebar.item icon="document-text" :href="route('admin.organizations')" :current="request()->routeIs('admin.organizations')" wire:navigate>
