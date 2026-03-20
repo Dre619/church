@@ -332,18 +332,13 @@ new class extends Component
             icon="magnifying-glass"
             class="max-w-xs"
         />
-        <x-select wire:model.live="filterCategory" class="max-w-[180px]">
-            <option value="">All categories</option>
-            @foreach ($categoryOptions as $cat)
-                <option value="{{ $cat['value'] }}">{{ $cat['label'] }}</option>
-            @endforeach
-        </x-select>
-        <x-select wire:model.live="filterMethod" class="max-w-[160px]">
-            <option value="">All methods</option>
-            @foreach ($paymentMethods as $key => $label)
-                <option value="{{ $key }}">{{ $label }}</option>
-            @endforeach
-        </x-select>
+        <x-select wire:model.live="filterCategory" class="max-w-[180px]" placeholder="All categories"
+            :options="$categoryOptions" option-value="value" option-label="label"
+        />
+        <x-select wire:model.live="filterMethod" class="max-w-[160px]" placeholder="All methods"
+            :options="collect($paymentMethods)->map(fn ($label, $key) => ['value' => $key, 'label' => $label])->values()->toArray()"
+            option-value="value" option-label="label"
+        />
     </div>
 
     {{-- ── Table ────────────────────────────────────────────────────────────── --}}
@@ -351,7 +346,7 @@ new class extends Component
         <table class="min-w-full divide-y divide-gray-200 text-sm">
             <thead class="bg-gray-50">
                 <tr>
-                    <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">Donor</th>
+                    <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">Member</th>
                     <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">Category</th>
                     <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">Amount</th>
                     <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">Method</th>
@@ -445,14 +440,14 @@ new class extends Component
                 </div>
 
                 {{-- Donor name --}}
-                <div class="sm:col-span-2">
+                {{--<div class="sm:col-span-2">
                     <x-input
                         wire:model="name"
                         label="Donor Name"
                         placeholder="Full name of the donor"
                         icon="user"
                     />
-                </div>
+                </div>--}}
 
                 {{-- Category --}}
                 <x-select
@@ -492,19 +487,18 @@ new class extends Component
                 @endif
 
                 {{-- Payment Method --}}
-                <x-select wire:model="payment_method" label="Payment Method">
-                    <option value="" disabled>Select method</option>
-                    @foreach ($paymentMethods as $key => $label)
-                        <option value="{{ $key }}">{{ $label }}</option>
-                    @endforeach
-                </x-select>
+                <x-select wire:model="payment_method" label="Payment Method" placeholder="Select method"
+                    :options="collect($paymentMethods)->map(fn ($label, $key) => ['value' => $key, 'label' => $label])->values()->toArray()"
+                    option-value="value" option-label="label"
+                />
 
                 {{-- Donation Date --}}
-                <x-input
+                <x-datetime-picker
                     wire:model="donation_date"
                     label="Payment Date"
-                    type="date"
-                    icon="calendar"
+                    placeholder="Payment Date"
+                    without-time
+                    display-format="DD/MM/YYYY"
                 />
 
                 {{-- Transaction ID --}}
@@ -555,5 +549,5 @@ new class extends Component
             </x-slot>
         </x-card>
     </x-modal>
-
+    <x-spinner/>
 </div>

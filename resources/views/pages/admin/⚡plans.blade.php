@@ -221,26 +221,15 @@ new class extends Component
             </div>
 
             <div class="flex items-center gap-3">
-                <x-select
-                    wire:model.live="filterActive"
-                    placeholder="Filter by status"
-                    class="w-40"
-                >
-                    <x-select.option label="All Plans" value="all" />
-                    <x-select.option label="Active" value="active" />
-                    <x-select.option label="Inactive" value="inactive" />
-                </x-select>
+                <x-select wire:model.live="filterActive" placeholder="Filter by status" class="w-40"
+                    :options="[['value'=>'all','label'=>'All Plans'],['value'=>'active','label'=>'Active'],['value'=>'inactive','label'=>'Inactive']]"
+                    option-value="value" option-label="label"
+                />
 
-                <x-select
-                    wire:model.live="perPage"
-                    placeholder="Per page"
-                    class="w-32"
-                >
-                    <x-select.option label="10" value="10" />
-                    <x-select.option label="25" value="25" />
-                    <x-select.option label="50" value="50" />
-                    <x-select.option label="100" value="100" />
-                </x-select>
+                <x-select wire:model.live="perPage" placeholder="Per page" class="w-32"
+                    :options="[['value'=>10,'label'=>'10'],['value'=>25,'label'=>'25'],['value'=>50,'label'=>'50'],['value'=>100,'label'=>'100']]"
+                    option-value="value" option-label="label"
+                />
 
                 <x-button
                     primary
@@ -496,4 +485,5 @@ new class extends Component
             </x-slot>
         </x-card>
     </x-modal>
+    <x-spinner/>
 </div>

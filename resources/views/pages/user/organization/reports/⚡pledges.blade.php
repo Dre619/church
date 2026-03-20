@@ -176,11 +176,10 @@ new class extends Component
 
     {{-- ── Filters ──────────────────────────────────────────────────────────── --}}
     <div class="mb-5 flex flex-wrap items-end gap-3">
-        <x-select wire:model.live="year" class="w-28">
-            @foreach ($this->availableYears as $yr)
-                <option value="{{ $yr }}">{{ $yr }}</option>
-            @endforeach
-        </x-select>
+        <x-select wire:model.live="year" class="w-28"
+            :options="collect($this->availableYears)->map(fn ($yr) => ['value' => $yr, 'label' => $yr])->toArray()"
+            option-value="value" option-label="label"
+        />
 
         <div class="min-w-[200px]">
             <x-select
@@ -206,12 +205,10 @@ new class extends Component
             />
         </div>
 
-        <x-select wire:model.live="filterStatus" class="w-36">
-            <option value="">All statuses</option>
-            @foreach ($statusOptions as $key => $label)
-                <option value="{{ $key }}">{{ $label }}</option>
-            @endforeach
-        </x-select>
+        <x-select wire:model.live="filterStatus" class="w-36" placeholder="All statuses"
+            :options="collect($statusOptions)->map(fn ($label, $key) => ['value' => $key, 'label' => $label])->values()->toArray()"
+            option-value="value" option-label="label"
+        />
     </div>
 
     {{-- ── Summary Cards ────────────────────────────────────────────────────── --}}
@@ -347,5 +344,5 @@ new class extends Component
     </div>
 
     @endif {{-- canViewReports --}}
-
+<x-spinner/>
 </div>

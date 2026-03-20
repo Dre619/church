@@ -305,25 +305,15 @@ new class extends Component
 
             {{-- Filters Row --}}
             <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
-                <x-select
-                    wire:model.live="filterStatus"
-                    placeholder="Filter by status"
-                >
-                    <x-select.option label="All Status" value="all" />
-                    @foreach($statuses as $key => $label)
-                        <x-select.option label="{{ $label }}" value="{{ $key }}" />
-                    @endforeach
-                </x-select>
+                <x-select wire:model.live="filterStatus" placeholder="Filter by status"
+                    :options="array_merge([['value'=>'all','label'=>'All Status']], collect($statuses)->map(fn ($label, $key) => ['value' => $key, 'label' => $label])->values()->toArray())"
+                    option-value="value" option-label="label"
+                />
 
-                <x-select
-                    wire:model.live="filterPaymentMethod"
-                    placeholder="Payment method"
-                >
-                    <x-select.option label="All Methods" value="all" />
-                    @foreach($paymentMethods as $key => $label)
-                        <x-select.option label="{{ $label }}" value="{{ $key }}" />
-                    @endforeach
-                </x-select>
+                <x-select wire:model.live="filterPaymentMethod" placeholder="Payment method"
+                    :options="array_merge([['value'=>'all','label'=>'All Methods']], collect($paymentMethods)->map(fn ($label, $key) => ['value' => $key, 'label' => $label])->values()->toArray())"
+                    option-value="value" option-label="label"
+                />
 
                 <x-select
                     wire:model.live="filterOrganization"
@@ -333,15 +323,10 @@ new class extends Component
                     option-value="id"
                 />
 
-                <x-select
-                    wire:model.live="perPage"
-                    placeholder="Per page"
-                >
-                    <x-select.option label="10" value="10" />
-                    <x-select.option label="25" value="25" />
-                    <x-select.option label="50" value="50" />
-                    <x-select.option label="100" value="100" />
-                </x-select>
+                <x-select wire:model.live="perPage" placeholder="Per page"
+                    :options="[['value'=>10,'label'=>'10'],['value'=>25,'label'=>'25'],['value'=>50,'label'=>'50'],['value'=>100,'label'=>'100']]"
+                    option-value="value" option-label="label"
+                />
             </div>
         </div>
     </div>
@@ -546,15 +531,10 @@ new class extends Component
 
                     {{-- Payment Method --}}
                     <div>
-                        <x-select
-                            label="Payment Method *"
-                            placeholder="Select method"
-                            wire:model="payment_method"
-                        >
-                            @foreach($paymentMethods as $key => $label)
-                                <x-select.option label="{{ $label }}" value="{{ $key }}" />
-                            @endforeach
-                        </x-select>
+                        <x-select label="Payment Method *" placeholder="Select method" wire:model="payment_method"
+                            :options="collect($paymentMethods)->map(fn ($label, $key) => ['value' => $key, 'label' => $label])->values()->toArray()"
+                            option-value="value" option-label="label"
+                        />
                         @error('payment_method') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                     </div>
 
@@ -570,15 +550,10 @@ new class extends Component
 
                     {{-- Status --}}
                     <div>
-                        <x-select
-                            label="Status *"
-                            placeholder="Select status"
-                            wire:model="status"
-                        >
-                            @foreach($statuses as $key => $label)
-                                <x-select.option label="{{ $label }}" value="{{ $key }}" />
-                            @endforeach
-                        </x-select>
+                        <x-select label="Status *" placeholder="Select status" wire:model="status"
+                            :options="collect($statuses)->map(fn ($label, $key) => ['value' => $key, 'label' => $label])->values()->toArray()"
+                            option-value="value" option-label="label"
+                        />
                         @error('status') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                     </div>
 
@@ -588,6 +563,7 @@ new class extends Component
                             label="Payment Date & Time *"
                             placeholder="Select date and time"
                             wire:model="paid_at"
+                            display-format="DD/MM/YYYY"
                         />
                         @error('paid_at') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                     </div>
@@ -696,4 +672,5 @@ new class extends Component
         </x-card>
     </x-modal>
     @endif
+    <x-spinner/>
 </div>

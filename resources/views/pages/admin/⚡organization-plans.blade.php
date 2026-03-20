@@ -235,14 +235,10 @@ new class extends Component
 
             {{-- Filters Row --}}
             <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
-                <x-select
-                    wire:model.live="filterActive"
-                    placeholder="Filter by status"
-                >
-                    <x-select.option label="All Status" value="all" />
-                    <x-select.option label="Active" value="active" />
-                    <x-select.option label="Inactive" value="inactive" />
-                </x-select>
+                <x-select wire:model.live="filterActive" placeholder="Filter by status"
+                    :options="[['value'=>'all','label'=>'All Status'],['value'=>'active','label'=>'Active'],['value'=>'inactive','label'=>'Inactive']]"
+                    option-value="value" option-label="label"
+                />
 
                 <x-select
                     wire:model.live="filterOrganization"
@@ -260,15 +256,10 @@ new class extends Component
                     option-value="id"
                 />
 
-                <x-select
-                    wire:model.live="perPage"
-                    placeholder="Per page"
-                >
-                    <x-select.option label="10" value="10" />
-                    <x-select.option label="25" value="25" />
-                    <x-select.option label="50" value="50" />
-                    <x-select.option label="100" value="100" />
-                </x-select>
+                <x-select wire:model.live="perPage" placeholder="Per page"
+                    :options="[['value'=>10,'label'=>'10'],['value'=>25,'label'=>'25'],['value'=>50,'label'=>'50'],['value'=>100,'label'=>'100']]"
+                    option-value="value" option-label="label"
+                />
             </div>
         </div>
     </div>
@@ -435,6 +426,7 @@ new class extends Component
                             placeholder="Select start date"
                             wire:model="start_date"
                             without-time
+                            display-format="DD/MM/YYYY"
                         />
                         @error('start_date') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                     </div>
@@ -446,6 +438,7 @@ new class extends Component
                             placeholder="Select end date (optional)"
                             wire:model="end_date"
                             without-time
+                            display-format="DD/MM/YYYY"
                         />
                         @error('end_date') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                     </div>
@@ -487,4 +480,5 @@ new class extends Component
             </x-slot>
         </x-card>
     </x-modal>
+    <x-spinner/>
 </div>

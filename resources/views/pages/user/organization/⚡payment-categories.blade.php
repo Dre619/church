@@ -175,11 +175,10 @@ new class extends Component
             class="max-w-xs"
         />
 
-        <x-select wire:model.live="filterStatus" class="max-w-[160px]">
-            <option value="">All statuses</option>
-            <option value="1">Active</option>
-            <option value="0">Inactive</option>
-        </x-select>
+        <x-select wire:model.live="filterStatus" class="max-w-[160px]"
+            :options="[['value'=>'','label'=>'All statuses'],['value'=>'1','label'=>'Active'],['value'=>'0','label'=>'Inactive']]"
+            option-value="value" option-label="label"
+        />
     </div>
 
     {{-- ── Table ────────────────────────────────────────────────────────────── --}}
@@ -304,5 +303,5 @@ new class extends Component
             </x-slot>
         </x-card>
     </x-modal>
-
+<x-spinner/>
 </div>

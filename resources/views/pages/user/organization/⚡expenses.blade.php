@@ -276,16 +276,13 @@ new class extends Component
             class="max-w-xs"
         />
 
-        <x-select wire:model.live="filterCategory" class="max-w-[180px]">
-            <option value="">All categories</option>
-            @foreach ($categoryOptions as $cat)
-                <option value="{{ $cat['value'] }}">{{ $cat['label'] }}</option>
-            @endforeach
-        </x-select>
+        <x-select wire:model.live="filterCategory" class="max-w-[180px]" placeholder="All categories"
+            :options="$categoryOptions" option-value="value" option-label="label"
+        />
 
         <div class="flex items-center gap-2">
-            <x-input wire:model.live="filterDateFrom" type="date" label="From" class="w-36" />
-            <x-input wire:model.live="filterDateTo"   type="date" label="To"   class="w-36" />
+            <x-datetime-picker wire:model.live="filterDateFrom" label="From" placeholder="From" without-time display-format="DD/MM/YYYY" class="w-36" />
+            <x-datetime-picker wire:model.live="filterDateTo" label="To" placeholder="To" without-time display-format="DD/MM/YYYY" class="w-36" />
         </div>
 
         @if ($filterCategory || $filterDateFrom || $filterDateTo || $search)
@@ -489,11 +486,12 @@ new class extends Component
                 />
 
                 {{-- Date --}}
-                <x-input
+                <x-datetime-picker
                     wire:model="expense_date"
                     label="Expense Date"
-                    type="date"
-                    icon="calendar"
+                    placeholder="Expense Date"
+                    without-time
+                    display-format="DD/MM/YYYY"
                 />
 
                 {{-- Receipt upload --}}
@@ -573,5 +571,5 @@ new class extends Component
             </x-slot>
         </x-card>
     </x-modal>
-
+<x-spinner/>
 </div>

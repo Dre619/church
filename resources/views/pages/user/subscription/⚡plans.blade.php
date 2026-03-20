@@ -602,5 +602,6 @@ new class extends Component
                 });
             });
     </script>
+    <x-spinner/>
     <x-notifications />
 </div>

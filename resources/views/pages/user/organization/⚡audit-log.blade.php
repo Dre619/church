@@ -43,12 +43,10 @@ new class extends Component
         <div class="min-w-[260px]">
             <x-input wire:model.live.debounce.300ms="search" placeholder="Search descriptions…" icon="magnifying-glass" />
         </div>
-        <x-select wire:model.live="filterAction" class="w-36">
-            <option value="">All actions</option>
-            <option value="created">Created</option>
-            <option value="updated">Updated</option>
-            <option value="deleted">Deleted</option>
-        </x-select>
+        <x-select wire:model.live="filterAction" class="w-36"
+            :options="[['value'=>'','label'=>'All actions'],['value'=>'created','label'=>'Created'],['value'=>'updated','label'=>'Updated'],['value'=>'deleted','label'=>'Deleted']]"
+            option-value="value" option-label="label"
+        />
     </div>
 
     <div class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
@@ -102,4 +100,5 @@ new class extends Component
             </div>
         @endif
     </div>
+    <x-spinner/>
 </div>

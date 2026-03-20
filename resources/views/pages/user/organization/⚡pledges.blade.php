@@ -232,18 +232,13 @@ new class extends Component
             icon="magnifying-glass"
             class="max-w-xs"
         />
-        <x-select wire:model.live="filterProject" class="max-w-[200px]">
-            <option value="">All projects</option>
-            @foreach ($projectOptions as $p)
-                <option value="{{ $p['value'] }}">{{ $p['label'] }}</option>
-            @endforeach
-        </x-select>
-        <x-select wire:model.live="filterStatus" class="max-w-[150px]">
-            <option value="">All statuses</option>
-            @foreach ($statusOptions as $key => $label)
-                <option value="{{ $key }}">{{ $label }}</option>
-            @endforeach
-        </x-select>
+        <x-select wire:model.live="filterProject" class="max-w-[200px]" placeholder="All projects"
+            :options="$projectOptions" option-value="value" option-label="label"
+        />
+        <x-select wire:model.live="filterStatus" class="max-w-[150px]" placeholder="All statuses"
+            :options="collect($statusOptions)->map(fn ($label, $key) => ['value' => $key, 'label' => $label])->values()->toArray()"
+            option-value="value" option-label="label"
+        />
     </div>
 
     {{-- ── Table ────────────────────────────────────────────────────────────── --}}
@@ -478,14 +473,13 @@ new class extends Component
                     step="0.01"
                 />
 
-                <x-select wire:model="status" label="Status">
-                    @foreach ($statusOptions as $key => $label)
-                        <option value="{{ $key }}">{{ $label }}</option>
-                    @endforeach
-                </x-select>
+                <x-select wire:model="status" label="Status"
+                    :options="collect($statusOptions)->map(fn ($label, $key) => ['value' => $key, 'label' => $label])->values()->toArray()"
+                    option-value="value" option-label="label"
+                />
 
-                <x-input wire:model="pledge_date" label="Pledge Date" type="date" icon="calendar" />
-                <x-input wire:model="deadline"    label="Deadline (optional)" type="date" icon="calendar" />
+                <x-datetime-picker wire:model="pledge_date" label="Pledge Date" placeholder="Pledge Date" without-time display-format="DD/MM/YYYY" />
+                <x-datetime-picker wire:model="deadline" label="Deadline (optional)" placeholder="Deadline (optional)" without-time display-format="DD/MM/YYYY" />
             </div>
 
             <x-slot name="footer">
@@ -517,5 +511,5 @@ new class extends Component
             </x-slot>
         </x-card>
     </x-modal>
-
+<x-spinner/>
 </div>

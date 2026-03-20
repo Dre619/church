@@ -7,6 +7,7 @@ use App\Models\OrganizationUser;
 use App\Models\Payments;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Storage;
 use Spatie\Browsershot\Browsershot;
 use Throwable;
 
@@ -25,7 +26,15 @@ class PaymentReceiptController extends Controller
 
         $payment->load(['user', 'category', 'pledge.project']);
 
-        $html = view('receipts.payment', compact('payment', 'organization'))->render();
+        $logoBase64 = null;
+
+        if ($organization->logo && Storage::disk('public')->exists($organization->logo)) {
+            $logoData    = Storage::disk('public')->get($organization->logo);
+            $logoMime    = Storage::disk('public')->mimeType($organization->logo);
+            $logoBase64  = 'data:' . $logoMime . ';base64,' . base64_encode($logoData);
+        }
+
+        $html = view('receipts.payment', compact('payment', 'organization', 'logoBase64'))->render();
 
         $filename = "receipt-{$payment->id}.pdf";
 

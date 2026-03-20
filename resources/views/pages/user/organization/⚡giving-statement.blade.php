@@ -56,13 +56,20 @@ new class extends Component
     <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
             <h1 class="text-2xl font-bold text-gray-900">Annual Giving Statements</h1>
-            <p class="mt-1 text-sm text-gray-500">Generate a PDF statement of each member's contributions for the year</p>
+            <p class="mt-1 text-sm text-gray-500">Generate PDF or Excel statements of each member's contributions for the year</p>
         </div>
-        <x-select wire:model.live="year" class="w-28">
-            @foreach ($this->availableYears as $yr)
-                <option value="{{ $yr }}">{{ $yr }}</option>
-            @endforeach
-        </x-select>
+        <div class="flex items-center gap-3 flex-wrap">
+            <x-select wire:model.live="year" class="w-28"
+                :options="collect($this->availableYears)->map(fn ($yr) => ['value' => $yr, 'label' => $yr])->toArray()"
+                option-value="value" option-label="label"
+            />
+            <a href="{{ route('giving.statement.excel.all', $year) }}"
+               target="_blank"
+               class="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-semibold transition-colors border border-emerald-200">
+                <x-icon name="table-cells" class="w-3.5 h-3.5" />
+                Export All to Excel
+            </a>
+        </div>
     </div>
 
     <div class="mb-4">
@@ -96,12 +103,20 @@ new class extends Component
                             {{ format_currency($member->total_given ?? 0, $currency) }}
                         </td>
                         <td class="px-6 py-4 text-center">
-                            <a href="{{ route('giving.statement.download', [$member->id, $year]) }}"
-                               target="_blank"
-                               class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-semibold transition-colors">
-                                <x-icon name="arrow-down-tray" class="w-3.5 h-3.5" />
-                                Download PDF
-                            </a>
+                            <div class="inline-flex items-center gap-2">
+                                <a href="{{ route('giving.statement.download', [$member->id, $year]) }}"
+                                   target="_blank"
+                                   class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-semibold transition-colors">
+                                    <x-icon name="document-arrow-down" class="w-3.5 h-3.5" />
+                                    PDF
+                                </a>
+                                <a href="{{ route('giving.statement.excel', [$member->id, $year]) }}"
+                                   target="_blank"
+                                   class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-semibold transition-colors">
+                                    <x-icon name="table-cells" class="w-3.5 h-3.5" />
+                                    Excel
+                                </a>
+                            </div>
                         </td>
                     </tr>
                 @empty
@@ -123,4 +138,5 @@ new class extends Component
             </div>
         @endif
     </div>
+    <x-spinner/>
 </div>

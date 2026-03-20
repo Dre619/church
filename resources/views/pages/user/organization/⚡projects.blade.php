@@ -424,5 +424,5 @@ new class extends Component
             </x-slot>
         </x-card>
     </x-modal>
-
+<x-spinner/>
 </div>

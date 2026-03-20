@@ -58,6 +58,10 @@ Route::middleware(['auth','activeSubscription'])->group(function(){
     Route::livewire('user/organization/giving-statement','pages::user.organization.giving-statement')->name('organization.giving-statement');
     Route::get('user/organization/giving-statement/{userId}/{year}/pdf', [GivingStatementController::class, 'download'])
         ->name('giving.statement.download');
+    Route::get('user/organization/giving-statement/{userId}/{year}/excel', [GivingStatementController::class, 'downloadExcel'])
+        ->name('giving.statement.excel');
+    Route::get('user/organization/giving-statement/{year}/excel/all', [GivingStatementController::class, 'downloadAllExcel'])
+        ->name('giving.statement.excel.all');
     // offline payments
     Route::livewire('user/organization/offline-payments','pages::user.organization.offline-payments')->name('organization.offline-payments');
     Route::livewire('user/organization/offline-payment-review','pages::user.organization.offline-payment-review')->name('organization.offline-payment-review');

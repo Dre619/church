@@ -637,11 +637,10 @@ new class extends Component
                     <div class="space-y-4">
                         <div>
                             <label class="field-label">Select Currency</label>
-                            <select wire:model="currency" class="field-line">
-                                @foreach(currency_list() as $code => $label)
-                                    <option value="{{ $code }}">{{ $label }}</option>
-                                @endforeach
-                            </select>
+                            <x-select wire:model="currency"
+                                :options="collect(currency_list())->map(fn ($label, $code) => ['value' => $code, 'label' => $label])->values()->toArray()"
+                                option-value="value" option-label="label"
+                            />
                             @error('currency') <p class="sans text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                         </div>
 
@@ -748,5 +747,5 @@ new class extends Component
         </x-card>
     </x-modal>
 
-    <x-notifications />
+    <x-spinner/>
     </div>

@@ -244,4 +244,5 @@ new class extends Component
             </div>
         </div>
     </flux:modal>
+    <x-spinner/>
 </div>

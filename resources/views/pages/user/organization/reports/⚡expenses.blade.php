@@ -202,24 +202,19 @@ new class extends Component
 
     {{-- ── Filters ──────────────────────────────────────────────────────────── --}}
     <div class="mb-5 flex flex-wrap items-end gap-3">
-        <x-select wire:model.live="year" class="w-28">
-            @foreach ($this->availableYears as $yr)
-                <option value="{{ $yr }}">{{ $yr }}</option>
-            @endforeach
-        </x-select>
+        <x-select wire:model.live="year" class="w-28"
+            :options="collect($this->availableYears)->map(fn ($yr) => ['value' => $yr, 'label' => $yr])->toArray()"
+            option-value="value" option-label="label"
+        />
 
-        <x-select wire:model.live="month" class="w-36">
-            <option value="">All months</option>
-            @foreach (range(1, 12) as $m)
-                <option value="{{ str_pad($m, 2, '0', STR_PAD_LEFT) }}">
-                    {{ \Carbon\Carbon::create()->month($m)->format('F') }}
-                </option>
-            @endforeach
-        </x-select>
+        <x-select wire:model.live="month" class="w-36" placeholder="All months"
+            :options="collect(range(1,12))->map(fn ($m) => ['value' => str_pad($m,2,'0',STR_PAD_LEFT), 'label' => \Carbon\Carbon::create()->month($m)->format('F')])->toArray()"
+            option-value="value" option-label="label"
+        />
 
         <div class="flex items-center gap-2">
-            <x-input wire:model.live="filterDateFrom" type="date" label="From" class="w-36" />
-            <x-input wire:model.live="filterDateTo"   type="date" label="To"   class="w-36" />
+            <x-datetime-picker wire:model.live="filterDateFrom" label="From" placeholder="From" without-time display-format="DD/MM/YYYY" class="w-36" />
+            <x-datetime-picker wire:model.live="filterDateTo" label="To" placeholder="To" without-time display-format="DD/MM/YYYY" class="w-36" />
         </div>
 
         @if ($month || $filterDateFrom || $filterDateTo)
@@ -405,5 +400,5 @@ new class extends Component
     </div>
 
     @endif {{-- canViewReports --}}
-
+<x-spinner/>
 </div>

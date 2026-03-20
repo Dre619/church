@@ -2,320 +2,300 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Receipt #{{ str_pad($payment->id, 8, '0', STR_PAD_LEFT) }} — {{ $organization->name }}</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
+        @page { margin: 10mm 12mm; }
+
         body {
-            font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-            background: #f4f4f4;
-            color: #1a1a1a;
-            font-size: 14px;
+            font-family: DejaVu Sans, Arial, sans-serif;
+            background: #ffffff;
+            color: #1a1a2e;
+            font-size: 12px;
             line-height: 1.5;
         }
 
-        .page {
-            max-width: 680px;
-            margin: 0 auto;
-            background: #fff;
-            border-radius: 8px;
-            overflow: hidden;
-        }
-
-        /* ── Header ── */
+        /* ── Header ──────────────────────────────────────────────── */
         .header {
-            background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%);
-            color: #fff;
-            padding: 32px 40px;
-            display: flex;
-            align-items: center;
-            gap: 20px;
+            background-color: #1e3a5f;
+            color: #ffffff;
+            padding: 0;
         }
-
+        .header-inner {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .header-inner td {
+            padding: 26px 36px;
+            vertical-align: middle;
+        }
         .header-logo {
-            width: 64px;
-            height: 64px;
+            width: 60px;
+            height: 60px;
             border-radius: 50%;
-            object-fit: cover;
             border: 2px solid rgba(255,255,255,0.3);
-            flex-shrink: 0;
         }
-
         .header-logo-placeholder {
-            width: 64px;
-            height: 64px;
+            width: 60px;
+            height: 60px;
             border-radius: 50%;
-            background: rgba(255,255,255,0.15);
+            background-color: rgba(255,255,255,0.15);
             border: 2px solid rgba(255,255,255,0.3);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            text-align: center;
             font-size: 22px;
-            font-weight: 700;
-            color: rgba(255,255,255,0.9);
-            flex-shrink: 0;
+            font-weight: bold;
+            color: #ffffff;
+            line-height: 56px;
         }
+        .org-name    { font-size: 18px; font-weight: bold; letter-spacing: -0.3px; }
+        .org-contact { font-size: 11px; color: rgba(255,255,255,0.7); margin-top: 3px; }
+        .receipt-number-cell { text-align: right; white-space: nowrap; }
+        .receipt-lbl { font-size: 10px; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.55); }
+        .receipt-num { font-size: 22px; font-weight: bold; letter-spacing: -0.5px; }
 
-        .header-info { flex: 1; }
-        .org-name { font-size: 20px; font-weight: 700; letter-spacing: -0.3px; }
-        .org-contact { font-size: 12px; color: rgba(255,255,255,0.75); margin-top: 4px; }
-        .receipt-label {
-            text-align: right;
-            flex-shrink: 0;
-        }
-        .receipt-label .label {
-            font-size: 11px;
-            font-weight: 600;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            color: rgba(255,255,255,0.6);
-        }
-        .receipt-label .number {
-            font-size: 22px;
-            font-weight: 700;
-            letter-spacing: -0.5px;
-        }
+        /* ── Accent bar ───────────────────────────────────────────── */
+        .accent-bar { background-color: #2563eb; height: 5px; }
 
-        /* ── Body ── */
-        .body { padding: 36px 40px; }
+        /* ── Body ────────────────────────────────────────────────── */
+        .body { padding: 28px 36px; }
 
-        /* Status badge */
-        .status-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 28px;
-            padding-bottom: 20px;
-            border-bottom: 1px dashed #e5e7eb;
-        }
-
+        /* Status / date row */
+        .status-table { width: 100%; border-collapse: collapse; margin-bottom: 22px; border-bottom: 1px dashed #e2e8f0; padding-bottom: 18px; }
+        .status-table td { padding-bottom: 18px; vertical-align: middle; }
         .badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 4px 12px;
-            border-radius: 99px;
-            font-size: 12px;
-            font-weight: 600;
-            background: #dcfce7;
+            display: inline-block;
+            background-color: #dcfce7;
+            border: 1px solid #86efac;
             color: #15803d;
+            font-size: 10px;
+            font-weight: bold;
+            padding: 3px 10px;
+            letter-spacing: 0.05em;
         }
+        .issue-date { font-size: 11px; color: #6b7280; text-align: right; }
 
-        .badge::before {
-            content: '';
-            display: block;
-            width: 7px;
-            height: 7px;
-            border-radius: 50%;
-            background: #16a34a;
-        }
-
-        .issue-date { font-size: 13px; color: #6b7280; }
-
-        /* Donor section */
+        /* Section title */
         .section-title {
-            font-size: 11px;
-            font-weight: 700;
-            letter-spacing: 1.5px;
+            font-size: 9px;
+            font-weight: bold;
+            letter-spacing: 0.1em;
             text-transform: uppercase;
-            color: #9ca3af;
-            margin-bottom: 8px;
+            color: #94a3b8;
+            margin-bottom: 6px;
         }
 
-        .donor-name { font-size: 18px; font-weight: 600; color: #111827; }
-        .donor-meta { font-size: 13px; color: #6b7280; margin-top: 2px; }
+        .donor-name { font-size: 16px; font-weight: bold; color: #0f172a; }
+        .donor-meta { font-size: 11px; color: #6b7280; margin-top: 2px; }
 
         /* Divider */
-        .divider { height: 1px; background: #f3f4f6; margin: 24px 0; }
+        .divider { height: 1px; background-color: #f1f5f9; margin: 20px 0; }
 
-        /* Details grid */
-        .details-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 28px;
-        }
-
-        .detail-item {}
-        .detail-label {
-            font-size: 11px;
-            font-weight: 600;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            color: #9ca3af;
-            margin-bottom: 3px;
-        }
-        .detail-value { font-size: 14px; color: #111827; font-weight: 500; }
-
-        /* Amount highlight */
+        /* Amount box */
         .amount-box {
-            background: #f0f9ff;
-            border: 1px solid #bae6fd;
-            border-radius: 8px;
-            padding: 20px 24px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 24px;
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 22px;
+            background-color: #eff6ff;
+            border: 1px solid #bfdbfe;
         }
+        .amount-box td {
+            padding: 16px 20px;
+            vertical-align: middle;
+            background-color: #eff6ff;
+        }
+        .amount-label { font-size: 12px; font-weight: bold; color: #1d4ed8; }
+        .amount-value { font-size: 26px; font-weight: bold; color: #1d4ed8; letter-spacing: -0.5px; text-align: right; }
 
-        .amount-label { font-size: 13px; font-weight: 600; color: #0369a1; }
-        .amount-value { font-size: 28px; font-weight: 800; color: #0369a1; letter-spacing: -0.5px; }
-
-        /* Notes */
-        .notes-box {
-            background: #fffbeb;
-            border-left: 3px solid #f59e0b;
+        /* Details grid (2-col table) */
+        .details-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 8px;
+            margin-bottom: 14px;
+            margin-left: -8px;
+            margin-right: -8px;
+        }
+        .details-table td {
+            width: 50%;
             padding: 12px 16px;
-            border-radius: 0 6px 6px 0;
-            margin-bottom: 24px;
+            vertical-align: top;
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
         }
-        .notes-box p { font-size: 13px; color: #78350f; }
+        .detail-label {
+            font-size: 9px;
+            font-weight: bold;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #94a3b8;
+            margin-bottom: 4px;
+        }
+        .detail-value { font-size: 13px; color: #0f172a; font-weight: bold; }
 
-        /* Pledge info */
+        /* Pledge box */
         .pledge-box {
-            background: #f5f3ff;
+            background-color: #f5f3ff;
             border: 1px solid #ddd6fe;
-            border-radius: 8px;
-            padding: 14px 18px;
-            margin-bottom: 24px;
+            padding: 12px 16px;
+            margin-bottom: 20px;
         }
-        .pledge-box .pledge-title { font-size: 12px; font-weight: 700; color: #7c3aed; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
-        .pledge-box .pledge-detail { font-size: 13px; color: #4c1d95; }
+        .pledge-title { font-size: 9px; font-weight: bold; color: #7c3aed; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px; }
+        .pledge-detail { font-size: 11px; color: #4c1d95; }
+
+        /* Notes box */
+        .notes-box {
+            background-color: #fffbeb;
+            border-left: 3px solid #f59e0b;
+            padding: 10px 14px;
+            margin-bottom: 20px;
+        }
+        .notes-box p { font-size: 11px; color: #78350f; }
+
+        /* Confirmation note */
+        .confirm-note {
+            font-size: 10px;
+            color: #94a3b8;
+            text-align: center;
+            margin-top: 8px;
+        }
 
         /* Footer */
         .footer {
-            background: #f9fafb;
-            border-top: 1px solid #f3f4f6;
-            padding: 20px 40px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+            background-color: #f8fafc;
+            border-top: 1px solid #e2e8f0;
+            width: 100%;
+            border-collapse: collapse;
         }
-
-        .footer-text { font-size: 12px; color: #9ca3af; }
-        .footer-brand { font-size: 12px; font-weight: 600; color: #6b7280; }
-
-        @page { margin: 10mm; }
+        .footer td {
+            padding: 14px 36px;
+            font-size: 10px;
+            color: #94a3b8;
+            vertical-align: middle;
+        }
+        .footer-brand { text-align: right; font-weight: bold; color: #64748b; }
     </style>
 </head>
 <body>
 
-    <div class="page">
+    {{-- ── Header ────────────────────────────────────────────────── --}}
+    <div class="header">
+        <table class="header-inner">
+            <tr>
+                <td style="width:76px; padding-right:0;">
+                    @if($logoBase64)
+                        <img src="{{ $logoBase64 }}" alt="{{ $organization->name }}" class="header-logo">
+                    @else
+                        <div class="header-logo-placeholder">{{ strtoupper(substr($organization->name, 0, 1)) }}</div>
+                    @endif
+                </td>
+                <td>
+                    <div class="org-name">{{ $organization->name }}</div>
+                    <div class="org-contact">
+                        @if($organization->address){{ $organization->address }}@endif
+                        @if($organization->phone) &bull; {{ $organization->phone }}@endif
+                        @if($organization->email) &bull; {{ $organization->email }}@endif
+                    </div>
+                </td>
+                <td class="receipt-number-cell">
+                    <div class="receipt-lbl">Receipt</div>
+                    <div class="receipt-num">#{{ str_pad($payment->id, 8, '0', STR_PAD_LEFT) }}</div>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="accent-bar"></div>
 
-        {{-- ── Header ── --}}
-        <div class="header">
-            @if($organization->logo)
-                <img src="{{ Storage::url($organization->logo) }}" alt="{{ $organization->name }}" class="header-logo">
-            @else
-                <div class="header-logo-placeholder">{{ strtoupper(substr($organization->name, 0, 1)) }}</div>
-            @endif
+    {{-- ── Body ─────────────────────────────────────────────────── --}}
+    <div class="body">
 
-            <div class="header-info">
-                <div class="org-name">{{ $organization->name }}</div>
-                <div class="org-contact">
-                    @if($organization->address){{ $organization->address }}@endif
-                    @if($organization->phone) · {{ $organization->phone }}@endif
-                    @if($organization->email) · {{ $organization->email }}@endif
-                </div>
-            </div>
+        {{-- Status & date --}}
+        <table class="status-table">
+            <tr>
+                <td><span class="badge">Payment Confirmed</span></td>
+                <td class="issue-date">Issued: {{ now()->format('F j, Y') }}</td>
+            </tr>
+        </table>
 
-            <div class="receipt-label">
-                <div class="label">Receipt</div>
-                <div class="number">#{{ str_pad($payment->id, 8, '0', STR_PAD_LEFT) }}</div>
-            </div>
-        </div>
+        {{-- Donor --}}
+        <div class="section-title">Received From</div>
+        <div class="donor-name">{{ $payment->user?->name ?? $payment->name ?? 'Walk-in Donor' }}</div>
+        @if($payment->user?->email)
+            <div class="donor-meta">{{ $payment->user->email }}</div>
+        @endif
+        @if($payment->transaction_id)
+            <div class="donor-meta">Ref: {{ $payment->transaction_id }}</div>
+        @endif
 
-        {{-- ── Body ── --}}
-        <div class="body">
+        <div class="divider"></div>
 
-            {{-- Status & Date --}}
-            <div class="status-row">
-                <span class="badge">Payment Confirmed</span>
-                <span class="issue-date">
-                    Issued: {{ now()->format('F j, Y') }}
-                </span>
-            </div>
+        {{-- Amount --}}
+        <table class="amount-box">
+            <tr>
+                <td class="amount-label">Amount Received</td>
+                <td class="amount-value">{{ format_currency($payment->amount, $organization->currency ?? 'ZMW') }}</td>
+            </tr>
+        </table>
 
-            {{-- Donor --}}
-            <div class="section-title">Received From</div>
-            <div class="donor-name">{{ $payment->user?->name ?? $payment->name ?? 'Walk-in Donor' }}</div>
-            @if($payment->user?->email)
-                <div class="donor-meta">{{ $payment->user->email }}</div>
-            @endif
-            @if($payment->transaction_id)
-                <div class="donor-meta">Ref: {{ $payment->transaction_id }}</div>
-            @endif
-
-            <div class="divider"></div>
-
-            {{-- Amount --}}
-            <div class="amount-box">
-                <div class="amount-label">Amount Received</div>
-                <div class="amount-value">{{ format_currency($payment->amount, $organization->currency ?? 'NGN') }}</div>
-            </div>
-
-            {{-- Details Grid --}}
-            <div class="details-grid">
-                <div class="detail-item">
+        {{-- Details grid --}}
+        <table class="details-table">
+            <tr>
+                <td>
                     <div class="detail-label">Category</div>
                     <div class="detail-value">{{ $payment->category?->name ?? '—' }}</div>
-                </div>
-
-                <div class="detail-item">
+                </td>
+                <td>
                     <div class="detail-label">Payment Date</div>
-                    <div class="detail-value">
-                        {{ \Carbon\Carbon::parse($payment->donation_date)->format('F j, Y') }}
-                    </div>
-                </div>
-
-                <div class="detail-item">
+                    <div class="detail-value">{{ \Carbon\Carbon::parse($payment->donation_date)->format('F j, Y') }}</div>
+                </td>
+            </tr>
+            <tr>
+                <td>
                     <div class="detail-label">Payment Method</div>
                     <div class="detail-value">{{ ucwords(str_replace('_', ' ', $payment->payment_method)) }}</div>
-                </div>
-
-                <div class="detail-item">
+                </td>
+                <td>
                     <div class="detail-label">Receipt Number</div>
                     <div class="detail-value">#{{ str_pad($payment->id, 8, '0', STR_PAD_LEFT) }}</div>
+                </td>
+            </tr>
+        </table>
+
+        {{-- Pledge info --}}
+        @if($payment->pledge)
+            <div class="pledge-box">
+                <div class="pledge-title">Linked to Pledge</div>
+                <div class="pledge-detail">
+                    Project: {{ $payment->pledge->project?->project_title ?? '—' }}
+                    &nbsp;&bull;&nbsp;
+                    Total Pledged: {{ format_currency($payment->pledge->amount, $organization->currency ?? 'ZMW') }}
+                    &nbsp;&bull;&nbsp;
+                    Fulfilled: {{ format_currency($payment->pledge->fulfilled_amount, $organization->currency ?? 'ZMW') }}
                 </div>
             </div>
+        @endif
 
-            {{-- Pledge Info (if linked) --}}
-            @if($payment->pledge)
-                <div class="pledge-box">
-                    <div class="pledge-title">Linked to Pledge</div>
-                    <div class="pledge-detail">
-                        Project: {{ $payment->pledge->project?->project_title ?? '—' }}
-                        &nbsp;·&nbsp;
-                        Total Pledged: {{ format_currency($payment->pledge->amount, $organization->currency ?? 'NGN') }}
-                        &nbsp;·&nbsp;
-                        Fulfilled: {{ format_currency($payment->pledge->fulfilled_amount, $organization->currency ?? 'NGN') }}
-                    </div>
-                </div>
-            @endif
+        {{-- Notes --}}
+        @if($payment->other)
+            <div class="notes-box">
+                <p><strong>Notes:</strong> {{ $payment->other }}</p>
+            </div>
+        @endif
 
-            {{-- Notes --}}
-            @if($payment->other)
-                <div class="notes-box">
-                    <p><strong>Notes:</strong> {{ $payment->other }}</p>
-                </div>
-            @endif
-
-            <p style="font-size:12px;color:#9ca3af;text-align:center;margin-top:8px;">
-                This receipt confirms that the above payment has been received by {{ $organization->name }}.
-                @if($organization->website)Thank you for your generous contribution. Visit us at {{ $organization->website }}.@endif
-            </p>
-
-        </div>
-
-        {{-- ── Footer ── --}}
-        <div class="footer">
-            <div class="footer-text">{{ $organization->name }} &copy; {{ now()->year }}</div>
-            <div class="footer-brand">The Treasurer &mdash; Church Management</div>
-        </div>
+        <p class="confirm-note">
+            This receipt confirms that the above payment has been received by {{ $organization->name }}.
+            @if($organization->website) Thank you for your generous contribution. Visit us at {{ $organization->website }}.@endif
+        </p>
 
     </div>
+
+    {{-- ── Footer ───────────────────────────────────────────────── --}}
+    <table class="footer">
+        <tr>
+            <td>{{ $organization->name }} &copy; {{ now()->year }}</td>
+            <td class="footer-brand">The Treasurer &mdash; Church Management</td>
+        </tr>
+    </table>
 
 </body>
 </html>

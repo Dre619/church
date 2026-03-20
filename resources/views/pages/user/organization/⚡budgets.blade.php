@@ -36,7 +36,8 @@ new class extends Component
         $this->currency = Organization::find($orgId)?->currency ?? 'ZMW';
 
         $this->incomeCategories = PaymentCategory::where('organization_id', $orgId)
-            ->where('is_active', true)->orderBy('name')
+            ->where(fn ($q) => $q->where('is_active', true)->orWhereNull('is_active'))
+            ->orderBy('name')
             ->pluck('name', 'id')->toArray();
 
         $this->expenseCategories = ExpenseCategory::where('organization_id', $orgId)
@@ -168,11 +169,10 @@ new class extends Component
             <p class="mt-1 text-sm text-gray-500">Set annual income & expense budgets and track actuals vs targets</p>
         </div>
         <div class="flex items-center gap-3">
-            <x-select wire:model.live="year" class="w-28">
-                @foreach (range(now()->year - 2, now()->year + 1) as $y)
-                    <option value="{{ $y }}">{{ $y }}</option>
-                @endforeach
-            </x-select>
+            <x-select wire:model.live="year" class="w-28"
+                :options="collect(range(now()->year - 2, now()->year + 1))->map(fn ($y) => ['value' => $y, 'label' => $y])->toArray()"
+                option-value="value" option-label="label"
+            />
         </div>
     </div>
 
@@ -269,25 +269,21 @@ new class extends Component
 
     {{-- Add/Edit Modal --}}
     <x-modal wire:model.defer="modalOpen" max-width="md">
-        <x-card :title="$editingId ? 'Edit Budget Line' : 'Add Budget Line'">
+        <x-card class="relative" :title="$editingId ? 'Edit Budget Line' : 'Add Budget Line'">
             <div class="space-y-4">
                 <x-input label="Line Item Name *" wire:model="name" placeholder="e.g. Tithe Budget" />
                 @error('name') <p class="text-red-500 text-xs">{{ $message }}</p> @enderror
 
                 @if ($type === 'income')
-                    <x-select label="Income Category (optional)" wire:model="category_id">
-                        <option value="">— All income —</option>
-                        @foreach ($incomeCategories as $id => $cat)
-                            <option value="{{ $id }}">{{ $cat }}</option>
-                        @endforeach
-                    </x-select>
+                    <x-select label="Income Category (optional)" wire:model="category_id" placeholder="— All income —"
+                        :options="collect($incomeCategories)->map(fn ($name, $id) => ['value' => $id, 'label' => $name])->values()->toArray()"
+                        option-value="value" option-label="label"
+                    />
                 @else
-                    <x-select label="Expense Category (optional)" wire:model="category_id">
-                        <option value="">— All expenses —</option>
-                        @foreach ($expenseCategories as $id => $cat)
-                            <option value="{{ $id }}">{{ $cat }}</option>
-                        @endforeach
-                    </x-select>
+                    <x-select label="Expense Category (optional)" wire:model="category_id" placeholder="— All expenses —"
+                        :options="collect($expenseCategories)->map(fn ($name, $id) => ['value' => $id, 'label' => $name])->values()->toArray()"
+                        option-value="value" option-label="label"
+                    />
                 @endif
 
                 <x-input label="Annual Budget Amount *" wire:model="amount" placeholder="0.00" type="number" step="0.01" />
@@ -302,6 +298,6 @@ new class extends Component
             </x-slot>
         </x-card>
     </x-modal>
-
+<x-spinner/>
     <x-notifications />
 </div>
