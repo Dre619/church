@@ -20,6 +20,8 @@ new class extends Component
     public $slug;
     public $description;
     public $price;
+    public ?int    $discount_percentage       = null;
+    public ?int    $discount_max_organizations = null;
     public $max_members;
     public $is_active        = true;
     public $is_trial         = false;
@@ -37,16 +39,18 @@ new class extends Component
     protected function rules(): array
     {
         return [
-            'name'        => 'required|string|max:255',
-            'slug'        => 'required|string|max:255|unique:plans,slug,' . $this->planId,
-            'description' => 'nullable|string|max:500',
-            'price'       => 'required|numeric|min:0',
-            'max_members' => 'nullable|integer|min:1',
-            'is_active'        => 'boolean',
-            'is_trial'         => 'boolean',
-            'trial_days'       => 'nullable|integer|min:1|required_if:is_trial,true',
-            'can_view_reports' => 'boolean',
-            'can_export'       => 'boolean',
+            'name'                => 'required|string|max:255',
+            'slug'                => 'required|string|max:255|unique:plans,slug,' . $this->planId,
+            'description'         => 'nullable|string|max:500',
+            'price'               => 'required|numeric|min:0',
+            'discount_percentage'        => 'nullable|integer|min:1|max:99',
+            'discount_max_organizations' => 'nullable|integer|min:1',
+            'max_members'         => 'nullable|integer|min:1',
+            'is_active'           => 'boolean',
+            'is_trial'            => 'boolean',
+            'trial_days'          => 'nullable|integer|min:1|required_if:is_trial,true',
+            'can_view_reports'    => 'boolean',
+            'can_export'          => 'boolean',
         ];
     }
 
@@ -92,17 +96,19 @@ new class extends Component
     {
         $plan = Plan::findOrFail($id);
 
-        $this->planId           = $plan->id;
-        $this->name             = $plan->name;
-        $this->slug             = $plan->slug;
-        $this->description      = $plan->description;
-        $this->price            = $plan->price;
-        $this->max_members      = $plan->max_members;
-        $this->is_active        = $plan->is_active;
-        $this->is_trial         = $plan->is_trial;
-        $this->trial_days       = $plan->trial_days;
-        $this->can_view_reports = $plan->can_view_reports;
-        $this->can_export       = $plan->can_export;
+        $this->planId               = $plan->id;
+        $this->name                 = $plan->name;
+        $this->slug                 = $plan->slug;
+        $this->description          = $plan->description;
+        $this->price                = $plan->price;
+        $this->discount_percentage       = $plan->discount_percentage;
+        $this->discount_max_organizations = $plan->discount_max_organizations;
+        $this->max_members          = $plan->max_members;
+        $this->is_active            = $plan->is_active;
+        $this->is_trial             = $plan->is_trial;
+        $this->trial_days           = $plan->trial_days;
+        $this->can_view_reports     = $plan->can_view_reports;
+        $this->can_export           = $plan->can_export;
 
         $this->editMode = true;
         $this->showModal = true;
@@ -113,16 +119,18 @@ new class extends Component
         $this->validate();
 
         $data = [
-            'name'        => $this->name,
-            'slug'        => $this->slug,
-            'description' => $this->description,
-            'price'       => $this->price,
-            'max_members' => $this->max_members,
-            'is_active'        => $this->is_active,
-            'is_trial'         => $this->is_trial,
-            'trial_days'       => $this->is_trial ? $this->trial_days : null,
-            'can_view_reports' => $this->can_view_reports,
-            'can_export'       => $this->can_export,
+            'name'                => $this->name,
+            'slug'                => $this->slug,
+            'description'         => $this->description,
+            'price'               => $this->price,
+            'discount_percentage'        => $this->discount_percentage ?: null,
+            'discount_max_organizations' => $this->discount_max_organizations ?: null,
+            'max_members'         => $this->max_members,
+            'is_active'           => $this->is_active,
+            'is_trial'            => $this->is_trial,
+            'trial_days'          => $this->is_trial ? $this->trial_days : null,
+            'can_view_reports'    => $this->can_view_reports,
+            'can_export'          => $this->can_export,
         ];
 
         if ($this->editMode) {
@@ -180,6 +188,8 @@ new class extends Component
             'slug',
             'description',
             'price',
+            'discount_percentage',
+            'discount_max_organizations',
             'max_members',
             'is_active',
             'is_trial',
@@ -277,14 +287,28 @@ new class extends Component
 
                     {{-- Price --}}
                     <div class="mb-6">
-                        <div class="flex items-baseline">
-                            @if($plan->is_trial)
+                        @if($plan->is_trial)
+                            <div class="flex items-baseline">
                                 <span class="text-4xl font-bold text-amber-600">Free</span>
-                            @else
+                            </div>
+                        @elseif($plan->hasActiveDiscount())
+                            <div class="flex items-baseline gap-2">
+                                <span class="text-4xl font-bold text-emerald-600">K{{ number_format($plan->discountedPrice(), 2) }}</span>
+                                <span class="text-gray-400 line-through text-lg">K{{ number_format($plan->price, 2) }}</span>
+                                <span class="text-gray-500 dark:text-gray-400">/month</span>
+                            </div>
+                            <span class="inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700">
+                                Save {{ $plan->discount_percentage }}%
+                                @if($plan->discount_max_organizations)
+                                    · {{ $plan->discount_max_organizations - $plan->organizationPlans()->count() }} spots left
+                                @endif
+                            </span>
+                        @else
+                            <div class="flex items-baseline">
                                 <span class="text-4xl font-bold text-gray-900 dark:text-gray-100">K{{ number_format($plan->price, 2) }}</span>
                                 <span class="text-gray-500 dark:text-gray-400 ml-2">/month</span>
-                            @endif
-                        </div>
+                            </div>
+                        @endif
                     </div>
 
                     {{-- Features --}}
@@ -427,6 +451,28 @@ new class extends Component
                             min="1"
                         />
                         @error('max_members') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                    </div>
+
+                    {{-- Discount --}}
+                    <div>
+                        <x-number
+                            label="Early-Adoption Discount (%)"
+                            placeholder="e.g. 20"
+                            wire:model="discount_percentage"
+                            min="1"
+                            max="99"
+                        />
+                        @error('discount_percentage') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                    </div>
+
+                    <div>
+                        <x-number
+                            label="Max Churches for Discount (leave blank = unlimited)"
+                            placeholder="e.g. 50"
+                            wire:model="discount_max_organizations"
+                            min="1"
+                        />
+                        @error('discount_max_organizations') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                     </div>
 
                     {{-- Is Trial --}}

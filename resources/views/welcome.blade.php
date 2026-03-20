@@ -687,6 +687,22 @@
                                             <span class="text-5xl font-extrabold text-gray-900">Free</span>
                                         </div>
                                         <p class="text-sm text-gray-400 mt-1">No credit card required</p>
+                                    @elseif($plan->hasActiveDiscount())
+                                        <div class="flex items-end gap-2 flex-wrap">
+                                            <span class="text-2xl font-bold text-gray-400 mb-2">ZMW</span>
+                                            <span class="text-5xl font-extrabold text-emerald-600">{{ number_format($plan->discountedPrice(), 0) }}</span>
+                                            <span class="text-xl font-semibold text-gray-400 line-through mb-1">{{ number_format($plan->price, 0) }}</span>
+                                            <span class="text-gray-400 mb-2">/mo</span>
+                                        </div>
+                                        <div class="flex items-center gap-2 mt-2 flex-wrap">
+                                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700 text-xs font-bold">
+                                                🏷 Save {{ $plan->discount_percentage }}% — early adoption
+                                            </span>
+                                            @if($plan->discount_max_organizations)
+                                                @php $spotsLeft = $plan->discount_max_organizations - $plan->organizationPlans()->count(); @endphp
+                                                <span class="text-xs text-gray-400">{{ $spotsLeft }} spot{{ $spotsLeft === 1 ? '' : 's' }} left</span>
+                                            @endif
+                                        </div>
                                     @else
                                         <div class="flex items-end gap-1">
                                             <span class="text-2xl font-bold text-gray-500 mb-2">ZMW</span>

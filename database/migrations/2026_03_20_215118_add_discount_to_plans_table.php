@@ -12,15 +12,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('plans', function (Blueprint $table) {
-            $table->boolean('can_view_reports')->default(true)->after('trial_days');
-            $table->boolean('can_export')->default(true)->after('can_view_reports');
+            $table->unsignedTinyInteger('discount_percentage')->nullable()->after('price');
+            $table->timestamp('discount_ends_at')->nullable()->after('discount_percentage');
         });
     }
 
     public function down(): void
     {
         Schema::table('plans', function (Blueprint $table) {
-            $table->dropColumn(['can_view_reports', 'can_export']);
+            $table->dropColumn(['discount_percentage', 'discount_ends_at']);
         });
     }
 };

@@ -67,12 +67,16 @@ new class extends Component
             : null;
     }
 
-    /** Price per month after discount */
+    /** Price per month: early-adoption discount first, then duration discount on top */
     public function getMonthlyPriceProperty(): float
     {
-        if (! $this->selectedPlanModel) return 0;
-        $discount = $this->monthOptions[$this->months]['discount'] ?? 0;
-        return $this->selectedPlanModel->price * (1 - $discount / 100);
+        if (! $this->selectedPlanModel) {
+            return 0;
+        }
+
+        $durationDiscount = $this->monthOptions[$this->months]['discount'] ?? 0;
+
+        return round($this->selectedPlanModel->discountedPrice() * (1 - $durationDiscount / 100), 2);
     }
 
     /** Total charge sent to Lenco (in ZMW, multiplied by 100 for kobo/ngwe if needed) */
@@ -321,11 +325,28 @@ new class extends Component
                     </div>
 
                     <div class="mb-7">
-                        <div class="flex items-end gap-1.5">
-                            <span class="text-4xl font-semibold text-slate-900">K{{ number_format($plan->price, 2) }}</span>
-                            <span class="text-slate-400 text-sm mb-1.5">/mo</span>
-                        </div>
-                        <p class="text-xs text-slate-400 mt-1">Base price · discounts apply at checkout</p>
+                        @if($plan->hasActiveDiscount())
+                            <div class="flex items-end gap-1.5 flex-wrap">
+                                <span class="text-4xl font-semibold text-emerald-600">K{{ number_format($plan->discountedPrice(), 2) }}</span>
+                                <span class="text-slate-400 line-through text-lg mb-1">K{{ number_format($plan->price, 2) }}</span>
+                                <span class="text-slate-400 text-sm mb-1.5">/mo</span>
+                            </div>
+                            <div class="flex items-center gap-2 mt-1 flex-wrap">
+                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-xs font-bold">
+                                    Save {{ $plan->discount_percentage }}%
+                                </span>
+                                @if($plan->discount_max_organizations)
+                                    @php $spotsLeft = $plan->discount_max_organizations - $plan->organizationPlans()->count(); @endphp
+                                    <span class="text-xs text-slate-400">{{ $spotsLeft }} spot{{ $spotsLeft === 1 ? '' : 's' }} left</span>
+                                @endif
+                            </div>
+                        @else
+                            <div class="flex items-end gap-1.5">
+                                <span class="text-4xl font-semibold text-slate-900">K{{ number_format($plan->price, 2) }}</span>
+                                <span class="text-slate-400 text-sm mb-1.5">/mo</span>
+                            </div>
+                            <p class="text-xs text-slate-400 mt-1">Base price · duration discounts apply at checkout</p>
+                        @endif
                     </div>
 
                     <div class="border-t border-slate-100 mb-6"></div>

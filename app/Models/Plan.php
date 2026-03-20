@@ -12,6 +12,8 @@ class Plan extends Model
         'slug',
         'description',
         'price',
+        'discount_percentage',
+        'discount_max_organizations',
         'max_members',
         'is_active',
         'is_trial',
@@ -23,13 +25,37 @@ class Plan extends Model
     protected function casts(): array
     {
         return [
-            'price'            => 'decimal:2',
-            'is_active'        => 'boolean',
-            'is_trial'         => 'boolean',
-            'trial_days'       => 'integer',
-            'can_view_reports' => 'boolean',
-            'can_export'       => 'boolean',
+            'price'               => 'decimal:2',
+            'discount_percentage'       => 'integer',
+            'discount_max_organizations' => 'integer',
+            'is_active'           => 'boolean',
+            'is_trial'            => 'boolean',
+            'trial_days'          => 'integer',
+            'can_view_reports'    => 'boolean',
+            'can_export'          => 'boolean',
         ];
+    }
+
+    public function hasActiveDiscount(): bool
+    {
+        if (! $this->discount_percentage) {
+            return false;
+        }
+
+        if ($this->discount_max_organizations === null) {
+            return true;
+        }
+
+        return $this->organizationPlans()->count() < $this->discount_max_organizations;
+    }
+
+    public function discountedPrice(): float
+    {
+        if (! $this->hasActiveDiscount()) {
+            return (float) $this->price;
+        }
+
+        return round((float) $this->price * (1 - $this->discount_percentage / 100), 2);
     }
 
     public function scopeTrial($query)
