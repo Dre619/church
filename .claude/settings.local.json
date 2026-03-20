@@ -1,0 +1,36 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find \"D:/CloudOne/church/resources/views/components\" -name \"*.php\" -o -name \"*.blade.php\" 2>/dev/null | head -30)",
+      "Bash(grep -r \"Volt::mount\\\\|pages::\" \"D:/CloudOne/church/vendor/livewire/\" --include=\"*.php\" -l 2>/dev/null | head -5)",
+      "Bash(grep -r \"addNamespace\\\\|'pages'\" \"D:/CloudOne/church/vendor/livewire/livewire/src/\" --include=\"*.php\" -l 2>/dev/null | head -5)",
+      "Bash(cd \"D:/CloudOne/church\" && vendor/bin/pint --dirty 2>&1)",
+      "Bash(cd \"D:/CloudOne/church\" && php artisan make:test --pest --no-interaction DashboardTest 2>&1)",
+      "Bash(cd \"D:/CloudOne/church\" && php artisan test --compact --filter=DashboardTest 2>&1)",
+      "Bash(cd \"D:/CloudOne/church\" && php artisan list --no-interaction 2>&1 | grep -i \"make:class\\\\|make:export\")",
+      "Bash(cd \"D:/CloudOne/church\" && php artisan make:export CollectionsExport --no-interaction 2>&1 && php artisan make:export ExpensesExport --no-interaction 2>&1 && php artisan make:export PledgesExport --no-interaction 2>&1)",
+      "Bash(cd \"D:/CloudOne/church\" && php artisan make:test --pest --no-interaction ExcelExportTest 2>&1)",
+      "Bash(cd \"D:/CloudOne/church\" && php artisan test --compact --filter=ExcelExportTest 2>&1)",
+      "Bash(cd \"D:/CloudOne/church\" && php artisan test --compact 2>&1)",
+      "Bash(cd \"D:/CloudOne/church\" && php artisan make:migration add_currency_to_organizations_table --table=organizations --no-interaction 2>&1)",
+      "Bash(cd \"D:/CloudOne/church\" && php artisan make:class App/Http/Controllers/PaymentReceiptController --no-interaction 2>&1)",
+      "Bash(cd \"D:/CloudOne/church\" && php artisan make:test --pest --no-interaction PaymentReceiptTest 2>&1)",
+      "Bash(php artisan:*)",
+      "Bash(composer show:*)",
+      "Bash(composer require:*)",
+      "Bash(cd D:/CloudOne/church && vendor/bin/pint --dirty 2>&1)",
+      "Bash(cd D:/CloudOne/church && composer show | grep -i browsershot 2>&1 && node --version 2>&1 && npx puppeteer --version 2>&1 | head -3)",
+      "Bash(node --version 2>&1 && npm --version 2>&1)",
+      "Bash(cd D:/CloudOne/church && npx puppeteer --version 2>&1; ls node_modules | grep -i puppeteer 2>&1; ls node_modules | grep -i chrome 2>&1)",
+      "Bash(cd D:/CloudOne/church && npm install puppeteer --save-dev 2>&1)",
+      "Bash(cd D:/CloudOne/church && vendor/bin/pint --dirty 2>&1 && php artisan test --compact --filter=PaymentReceiptTest 2>&1)",
+      "Bash(cd D:/CloudOne/church && php -r \"\nrequire 'vendor/autoload.php';\n\\\\$app = require 'bootstrap/app.php';\n\\\\$app->make\\('Illuminate\\\\Contracts\\\\Console\\\\Kernel'\\)->bootstrap\\(\\);\n\\\\$plans = App\\\\Models\\\\Plan::orderBy\\('price'\\)->get\\(['id','name','slug','price','max_users','is_active']\\);\nforeach\\(\\\\$plans as \\\\$p\\) echo \\\\$p->id.'|'.\\\\$p->name.'|'.\\\\$p->price.'|'.\\\\$p->max_users.'|'.\\\\$p->is_active.PHP_EOL;\n\" 2>&1)",
+      "Bash(mysql -u root church -e \"SELECT id, name, slug, price, max_members, is_trial, trial_days, is_active FROM plans ORDER BY id;\" 2>&1)",
+      "Bash(cd D:/CloudOne/church && vendor/bin/pint --dirty 2>&1 && php artisan test --compact 2>&1)",
+      "Bash(vendor/bin/pint --dirty 2>&1)",
+      "Bash(cd D:/CloudOne/church && sed -i 's/^APP_NAME=Laravel$/APP_NAME=\"The Treasurer\"/' .env && grep APP_NAME .env)",
+      "Bash(cd D:/CloudOne/church && vendor/bin/pint --dirty 2>&1 && php artisan route:list --name=offline --no-interaction 2>&1)",
+      "Bash(ls:*)"
+    ]
+  }
+}
